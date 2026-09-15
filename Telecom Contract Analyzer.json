@@ -1,0 +1,369 @@
+{
+  "name": "Telecom Contract Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        80
+      ],
+      "id": "5312f754-5beb-4c6c-b251-ee3be2a8159c",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "content": "### 📚 Load Data Flow",
+        "height": 460,
+        "width": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "043f5143-62b5-425a-9389-f64fb5ee87d4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        -48
+      ],
+      "id": "76f44142-5e4e-4562-81b1-0fafb1182e3b",
+      "name": "Insert Data to Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        -384
+      ],
+      "id": "eb41920b-d520-42b4-bdd8-e80af7a558c6",
+      "name": "When chat message received",
+      "webhookId": "0eae0cc3-d330-44b7-a30f-53cb4d4b21d3"
+    },
+    {
+      "parameters": {
+        "content": "### 🐕 2. Retriever Flow",
+        "height": 636,
+        "width": 920,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -416
+      ],
+      "typeVersion": 1,
+      "id": "7ef96ff8-a7e5-4392-9a30-1bc6e302c0c9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        96,
+        352
+      ],
+      "id": "fe636e60-c415-4fcc-a788-4be19625a904",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "S6T97II1L56o6QiB",
+          "name": "Hugging Face account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3.8-27b",
+        "options": {
+          "maxTokensToSample": 500
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -192
+      ],
+      "id": "6fa5d2c1-9ae7-4b69-9ade-82a9b5cc55f1",
+      "name": "Groq Chat M3",
+      "credentials": {
+        "groqApi": {
+          "id": "uRC8MWamWPctzdvo",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Upload Telecom Contract for Analysis",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload your file(s)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf, .csv",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        -48
+      ],
+      "id": "284fc942-c8f3-4ec7-bae2-283a71a74ef1",
+      "name": "Upload Telecom Contract for Analysis",
+      "webhookId": "78011553-a266-4d53-87b5-91163e1a4db4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Telecom Contract Intelligence Agent. You have three tools:\n\n1. Find Clause — use when asked to find specific clauses, SLA terms, penalties, dates, or pricing\n2. Analyze Risk — use when asked about risks, unfavourable terms, or red flags\n3. Check Compliance — use when asked about UAE regulations, TRA, or data protection compliance\n\nAlways use the most relevant tool. Never answer from your own knowledge.\nAlways start your response with [Clause Finder], [Risk Analyzer], or [Compliance Checker] to show which capability you used."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -384
+      ],
+      "id": "cbfdb28d-7ca1-4c78-9a01-0368632593c5",
+      "name": "Contract Intelligence Orchestator"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "Find_Clause",
+        "toolDescription": "Search the contract for specific clauses, SLA terms, penalties, dates, and pricing details",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        },
+        "includeDocumentMetadata": false
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        96
+      ],
+      "id": "c462eeaf-8586-4d33-ae8e-d6ea76ef27f2",
+      "name": "Find Clause"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "Analyze_Risk",
+        "toolDescription": "Search the contract and analyze clauses for risks, unfavourable terms, liability exposure, and red flags",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        },
+        "includeDocumentMetadata": false
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        96
+      ],
+      "id": "856a24d5-53ec-43be-9660-a7324f0ffff2",
+      "name": "Analyze Risk"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "Check_Compliance",
+        "toolDescription": "Search the contract and verify compliance with UAE data protection law, TRA standards, and data sovereignty requirements",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        },
+        "includeDocumentMetadata": false
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        96
+      ],
+      "id": "ab18eb29-2e2a-484d-8980-9c0dc670df12",
+      "name": "Check Compliance"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Contract Intelligence Orchestator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Find Clause",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Analyze Risk",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Check Compliance",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat M3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Contract Intelligence Orchestator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Telecom Contract for Analysis": {
+      "main": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contract Intelligence Orchestator": {
+      "main": [
+        []
+      ]
+    },
+    "Find Clause": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contract Intelligence Orchestator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Risk": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contract Intelligence Orchestator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Compliance": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contract Intelligence Orchestator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3fab9972-8c2b-4501-bedf-26b31c8eb65d",
+  "meta": {
+    "templateId": "rag-starter-template",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5ccaabc774483a1d3da73f0cec6f68282fe97c93d147a64ce572f0e40ee0a405"
+  },
+  "nodeGroups": [],
+  "id": "kZ7Ln2fmCzlnxScZ",
+  "tags": [
+    {
+      "updatedAt": "2026-09-14T12:19:53.785Z",
+      "createdAt": "2026-09-14T12:19:53.785Z",
+      "id": "63HU2cQCMYYc4PFj",
+      "name": "RAG"
+    },
+    {
+      "updatedAt": "2026-09-14T12:20:07.420Z",
+      "createdAt": "2026-09-14T12:20:07.420Z",
+      "id": "gUSdv5tPlaYjixiG",
+      "name": "Contract Analyzer"
+    }
+  ]
+}
